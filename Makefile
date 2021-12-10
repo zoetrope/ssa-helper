@@ -13,7 +13,8 @@ generate:
 	rm -rf ./tmp/output
 	mkdir -p ./tmp/output
 	./gen-deepcopy.sh
-	cp -r ./tmp/output/github.com/zoetrope/ac-deepcopy/tmp/client-go/applyconfigurations  applyconfigurations
+	cp -r ./tmp/output/github.com/zoetrope/ac-deepcopy/tmp/client-go/applyconfigurations/ applyconfigurations
+	cp -r ./tmp/client-go/applyconfigurations/* applyconfigurations
 
 .PHONY: setup
 setup: $(DEEPCOPY_GEN)
