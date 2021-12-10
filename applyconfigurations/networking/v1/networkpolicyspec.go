@@ -19,8 +19,8 @@ limitations under the License.
 package v1
 
 import (
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	apinetworkingv1 "k8s.io/api/networking/v1"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 )
 
 // NetworkPolicySpecApplyConfiguration represents an declarative configuration of the NetworkPolicySpec type for use

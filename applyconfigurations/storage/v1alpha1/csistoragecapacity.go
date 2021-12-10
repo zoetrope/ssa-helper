@@ -19,13 +19,13 @@ limitations under the License.
 package v1alpha1
 
 import (
-	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	v1alpha1 "k8s.io/api/storage/v1alpha1"
 	resource "k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	managedfields "k8s.io/apimachinery/pkg/util/managedfields"
+	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 )
 
 // CSIStorageCapacityApplyConfiguration represents an declarative configuration of the CSIStorageCapacity type for use

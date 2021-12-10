@@ -19,8 +19,8 @@ limitations under the License.
 package v1beta1
 
 import (
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/core/v1"
 	intstr "k8s.io/apimachinery/pkg/util/intstr"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/core/v1"
 )
 
 // IngressBackendApplyConfiguration represents an declarative configuration of the IngressBackend type for use

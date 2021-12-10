@@ -19,13 +19,13 @@ limitations under the License.
 package v1alpha1
 
 import (
-	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	corev1 "k8s.io/api/core/v1"
 	v1alpha1 "k8s.io/api/scheduling/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	managedfields "k8s.io/apimachinery/pkg/util/managedfields"
+	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 )
 
 // PriorityClassApplyConfiguration represents an declarative configuration of the PriorityClass type for use

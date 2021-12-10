@@ -19,13 +19,13 @@ limitations under the License.
 package v1beta1
 
 import (
-	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	v1beta1 "k8s.io/api/apps/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	types "k8s.io/apimachinery/pkg/types"
 	managedfields "k8s.io/apimachinery/pkg/util/managedfields"
+	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 )
 
 // ControllerRevisionApplyConfiguration represents an declarative configuration of the ControllerRevision type for use

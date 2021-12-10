@@ -19,12 +19,12 @@ limitations under the License.
 package v1
 
 import (
-	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	apiappsv1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	managedfields "k8s.io/apimachinery/pkg/util/managedfields"
+	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 )
 
 // DeploymentApplyConfiguration represents an declarative configuration of the Deployment type for use

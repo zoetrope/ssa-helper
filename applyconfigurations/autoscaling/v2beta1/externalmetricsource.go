@@ -19,8 +19,8 @@ limitations under the License.
 package v2beta1
 
 import (
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	resource "k8s.io/apimachinery/pkg/api/resource"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 )
 
 // ExternalMetricSourceApplyConfiguration represents an declarative configuration of the ExternalMetricSource type for use

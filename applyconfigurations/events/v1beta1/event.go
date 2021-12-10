@@ -19,13 +19,13 @@ limitations under the License.
 package v1beta1
 
 import (
-	corev1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/core/v1"
-	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	eventsv1beta1 "k8s.io/api/events/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	managedfields "k8s.io/apimachinery/pkg/util/managedfields"
+	corev1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/core/v1"
+	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 )
 
 // EventApplyConfiguration represents an declarative configuration of the Event type for use

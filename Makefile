@@ -15,6 +15,7 @@ generate:
 	./gen-deepcopy.sh
 	cp -r ./tmp/output/github.com/zoetrope/ac-deepcopy/tmp/client-go/applyconfigurations/ applyconfigurations
 	cp -r ./tmp/client-go/applyconfigurations/* applyconfigurations
+	find ./applyconfigurations/ -type f | xargs sed -i "s#k8s.io/client-go/applyconfigurations#github.com/zoetrope/ac-deepcopy/applyconfigurations#g"
 
 .PHONY: setup
 setup: $(DEEPCOPY_GEN)

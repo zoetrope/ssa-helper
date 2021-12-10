@@ -19,9 +19,9 @@ limitations under the License.
 package v1
 
 import (
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 )
 
 // PodTemplateSpecApplyConfiguration represents an declarative configuration of the PodTemplateSpec type for use
