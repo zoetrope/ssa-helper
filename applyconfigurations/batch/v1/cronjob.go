@@ -19,12 +19,15 @@ limitations under the License.
 package v1
 
 import (
+	"errors"
+
+	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	apibatchv1 "k8s.io/api/batch/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	managedfields "k8s.io/apimachinery/pkg/util/managedfields"
-	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // CronJobApplyConfiguration represents an declarative configuration of the CronJob type for use
@@ -273,4 +276,23 @@ func (b *CronJobApplyConfiguration) WithSpec(value *CronJobSpecApplyConfiguratio
 func (b *CronJobApplyConfiguration) WithStatus(value *CronJobStatusApplyConfiguration) *CronJobApplyConfiguration {
 	b.Status = value
 	return b
+}
+func (b *CronJobApplyConfiguration) Original() client.Object {
+	return &apibatchv1.CronJob{}
+}
+
+func (b *CronJobApplyConfiguration) Extract(obj client.Object, fieldManager string, subresource string) (*CronJobApplyConfiguration, error) {
+	return extractCronJob(obj.(*apibatchv1.CronJob), fieldManager, subresource)
+}
+func (b *CronJobApplyConfiguration) ObjectKey() (client.ObjectKey, error) {
+	if b.Namespace == nil {
+		return client.ObjectKey{}, errors.New("The CronJobApplyConfiguration namespace should not be empty.")
+	}
+	if b.Name == nil {
+		return client.ObjectKey{}, errors.New("The CronJobApplyConfiguration name should not be empty.")
+	}
+	return client.ObjectKey{
+		Name:      *b.Name,
+		Namespace: *b.Namespace,
+	}, nil
 }

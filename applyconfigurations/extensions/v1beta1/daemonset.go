@@ -19,12 +19,15 @@ limitations under the License.
 package v1beta1
 
 import (
+	"errors"
+
+	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	extensionsv1beta1 "k8s.io/api/extensions/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	managedfields "k8s.io/apimachinery/pkg/util/managedfields"
-	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // DaemonSetApplyConfiguration represents an declarative configuration of the DaemonSet type for use
@@ -273,4 +276,23 @@ func (b *DaemonSetApplyConfiguration) WithSpec(value *DaemonSetSpecApplyConfigur
 func (b *DaemonSetApplyConfiguration) WithStatus(value *DaemonSetStatusApplyConfiguration) *DaemonSetApplyConfiguration {
 	b.Status = value
 	return b
+}
+func (b *DaemonSetApplyConfiguration) Original() client.Object {
+	return &extensionsv1beta1.DaemonSet{}
+}
+
+func (b *DaemonSetApplyConfiguration) Extract(obj client.Object, fieldManager string, subresource string) (*DaemonSetApplyConfiguration, error) {
+	return extractDaemonSet(obj.(*extensionsv1beta1.DaemonSet), fieldManager, subresource)
+}
+func (b *DaemonSetApplyConfiguration) ObjectKey() (client.ObjectKey, error) {
+	if b.Namespace == nil {
+		return client.ObjectKey{}, errors.New("The DaemonSetApplyConfiguration namespace should not be empty.")
+	}
+	if b.Name == nil {
+		return client.ObjectKey{}, errors.New("The DaemonSetApplyConfiguration name should not be empty.")
+	}
+	return client.ObjectKey{
+		Name:      *b.Name,
+		Namespace: *b.Namespace,
+	}, nil
 }

@@ -19,12 +19,15 @@ limitations under the License.
 package v1beta1
 
 import (
+	"errors"
+
+	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	nodev1beta1 "k8s.io/api/node/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	managedfields "k8s.io/apimachinery/pkg/util/managedfields"
-	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // RuntimeClassApplyConfiguration represents an declarative configuration of the RuntimeClass type for use
@@ -280,4 +283,19 @@ func (b *RuntimeClassApplyConfiguration) WithOverhead(value *OverheadApplyConfig
 func (b *RuntimeClassApplyConfiguration) WithScheduling(value *SchedulingApplyConfiguration) *RuntimeClassApplyConfiguration {
 	b.Scheduling = value
 	return b
+}
+func (b *RuntimeClassApplyConfiguration) Original() client.Object {
+	return &nodev1beta1.RuntimeClass{}
+}
+
+func (b *RuntimeClassApplyConfiguration) Extract(obj client.Object, fieldManager string, subresource string) (*RuntimeClassApplyConfiguration, error) {
+	return extractRuntimeClass(obj.(*nodev1beta1.RuntimeClass), fieldManager, subresource)
+}
+func (b *RuntimeClassApplyConfiguration) ObjectKey() (client.ObjectKey, error) {
+	if b.Name == nil {
+		return client.ObjectKey{}, errors.New("The RuntimeClassApplyConfiguration name should not be empty.")
+	}
+	return client.ObjectKey{
+		Name: *b.Name,
+	}, nil
 }

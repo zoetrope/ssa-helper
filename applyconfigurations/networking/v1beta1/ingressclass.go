@@ -19,12 +19,15 @@ limitations under the License.
 package v1beta1
 
 import (
+	"errors"
+
+	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	networkingv1beta1 "k8s.io/api/networking/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	managedfields "k8s.io/apimachinery/pkg/util/managedfields"
-	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // IngressClassApplyConfiguration represents an declarative configuration of the IngressClass type for use
@@ -262,4 +265,19 @@ func (b *IngressClassApplyConfiguration) ensureObjectMetaApplyConfigurationExist
 func (b *IngressClassApplyConfiguration) WithSpec(value *IngressClassSpecApplyConfiguration) *IngressClassApplyConfiguration {
 	b.Spec = value
 	return b
+}
+func (b *IngressClassApplyConfiguration) Original() client.Object {
+	return &networkingv1beta1.IngressClass{}
+}
+
+func (b *IngressClassApplyConfiguration) Extract(obj client.Object, fieldManager string, subresource string) (*IngressClassApplyConfiguration, error) {
+	return extractIngressClass(obj.(*networkingv1beta1.IngressClass), fieldManager, subresource)
+}
+func (b *IngressClassApplyConfiguration) ObjectKey() (client.ObjectKey, error) {
+	if b.Name == nil {
+		return client.ObjectKey{}, errors.New("The IngressClassApplyConfiguration name should not be empty.")
+	}
+	return client.ObjectKey{
+		Name: *b.Name,
+	}, nil
 }

@@ -19,12 +19,15 @@ limitations under the License.
 package v1alpha1
 
 import (
+	"errors"
+
+	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	imagepolicyv1alpha1 "k8s.io/api/imagepolicy/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	managedfields "k8s.io/apimachinery/pkg/util/managedfields"
-	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // ImageReviewApplyConfiguration represents an declarative configuration of the ImageReview type for use
@@ -271,4 +274,19 @@ func (b *ImageReviewApplyConfiguration) WithSpec(value *ImageReviewSpecApplyConf
 func (b *ImageReviewApplyConfiguration) WithStatus(value *ImageReviewStatusApplyConfiguration) *ImageReviewApplyConfiguration {
 	b.Status = value
 	return b
+}
+func (b *ImageReviewApplyConfiguration) Original() client.Object {
+	return &imagepolicyv1alpha1.ImageReview{}
+}
+
+func (b *ImageReviewApplyConfiguration) Extract(obj client.Object, fieldManager string, subresource string) (*ImageReviewApplyConfiguration, error) {
+	return extractImageReview(obj.(*imagepolicyv1alpha1.ImageReview), fieldManager, subresource)
+}
+func (b *ImageReviewApplyConfiguration) ObjectKey() (client.ObjectKey, error) {
+	if b.Name == nil {
+		return client.ObjectKey{}, errors.New("The ImageReviewApplyConfiguration name should not be empty.")
+	}
+	return client.ObjectKey{
+		Name: *b.Name,
+	}, nil
 }

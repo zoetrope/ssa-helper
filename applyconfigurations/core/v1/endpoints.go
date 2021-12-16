@@ -19,12 +19,15 @@ limitations under the License.
 package v1
 
 import (
+	"errors"
+
+	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	apicorev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	managedfields "k8s.io/apimachinery/pkg/util/managedfields"
-	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // EndpointsApplyConfiguration represents an declarative configuration of the Endpoints type for use
@@ -269,4 +272,23 @@ func (b *EndpointsApplyConfiguration) WithSubsets(values ...*EndpointSubsetApply
 		b.Subsets = append(b.Subsets, *values[i])
 	}
 	return b
+}
+func (b *EndpointsApplyConfiguration) Original() client.Object {
+	return &apicorev1.Endpoints{}
+}
+
+func (b *EndpointsApplyConfiguration) Extract(obj client.Object, fieldManager string, subresource string) (*EndpointsApplyConfiguration, error) {
+	return extractEndpoints(obj.(*apicorev1.Endpoints), fieldManager, subresource)
+}
+func (b *EndpointsApplyConfiguration) ObjectKey() (client.ObjectKey, error) {
+	if b.Namespace == nil {
+		return client.ObjectKey{}, errors.New("The EndpointsApplyConfiguration namespace should not be empty.")
+	}
+	if b.Name == nil {
+		return client.ObjectKey{}, errors.New("The EndpointsApplyConfiguration name should not be empty.")
+	}
+	return client.ObjectKey{
+		Name:      *b.Name,
+		Namespace: *b.Namespace,
+	}, nil
 }

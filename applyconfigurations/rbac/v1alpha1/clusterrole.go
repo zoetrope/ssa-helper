@@ -19,12 +19,15 @@ limitations under the License.
 package v1alpha1
 
 import (
+	"errors"
+
+	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	rbacv1alpha1 "k8s.io/api/rbac/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	managedfields "k8s.io/apimachinery/pkg/util/managedfields"
-	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // ClusterRoleApplyConfiguration represents an declarative configuration of the ClusterRole type for use
@@ -276,4 +279,19 @@ func (b *ClusterRoleApplyConfiguration) WithRules(values ...*PolicyRuleApplyConf
 func (b *ClusterRoleApplyConfiguration) WithAggregationRule(value *AggregationRuleApplyConfiguration) *ClusterRoleApplyConfiguration {
 	b.AggregationRule = value
 	return b
+}
+func (b *ClusterRoleApplyConfiguration) Original() client.Object {
+	return &rbacv1alpha1.ClusterRole{}
+}
+
+func (b *ClusterRoleApplyConfiguration) Extract(obj client.Object, fieldManager string, subresource string) (*ClusterRoleApplyConfiguration, error) {
+	return extractClusterRole(obj.(*rbacv1alpha1.ClusterRole), fieldManager, subresource)
+}
+func (b *ClusterRoleApplyConfiguration) ObjectKey() (client.ObjectKey, error) {
+	if b.Name == nil {
+		return client.ObjectKey{}, errors.New("The ClusterRoleApplyConfiguration name should not be empty.")
+	}
+	return client.ObjectKey{
+		Name: *b.Name,
+	}, nil
 }

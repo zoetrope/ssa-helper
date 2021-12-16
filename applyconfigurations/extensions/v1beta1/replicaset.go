@@ -19,12 +19,15 @@ limitations under the License.
 package v1beta1
 
 import (
+	"errors"
+
+	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	extensionsv1beta1 "k8s.io/api/extensions/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	managedfields "k8s.io/apimachinery/pkg/util/managedfields"
-	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // ReplicaSetApplyConfiguration represents an declarative configuration of the ReplicaSet type for use
@@ -273,4 +276,23 @@ func (b *ReplicaSetApplyConfiguration) WithSpec(value *ReplicaSetSpecApplyConfig
 func (b *ReplicaSetApplyConfiguration) WithStatus(value *ReplicaSetStatusApplyConfiguration) *ReplicaSetApplyConfiguration {
 	b.Status = value
 	return b
+}
+func (b *ReplicaSetApplyConfiguration) Original() client.Object {
+	return &extensionsv1beta1.ReplicaSet{}
+}
+
+func (b *ReplicaSetApplyConfiguration) Extract(obj client.Object, fieldManager string, subresource string) (*ReplicaSetApplyConfiguration, error) {
+	return extractReplicaSet(obj.(*extensionsv1beta1.ReplicaSet), fieldManager, subresource)
+}
+func (b *ReplicaSetApplyConfiguration) ObjectKey() (client.ObjectKey, error) {
+	if b.Namespace == nil {
+		return client.ObjectKey{}, errors.New("The ReplicaSetApplyConfiguration namespace should not be empty.")
+	}
+	if b.Name == nil {
+		return client.ObjectKey{}, errors.New("The ReplicaSetApplyConfiguration name should not be empty.")
+	}
+	return client.ObjectKey{
+		Name:      *b.Name,
+		Namespace: *b.Namespace,
+	}, nil
 }

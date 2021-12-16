@@ -19,12 +19,15 @@ limitations under the License.
 package v1alpha1
 
 import (
+	"errors"
+
+	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	flowcontrolv1alpha1 "k8s.io/api/flowcontrol/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	managedfields "k8s.io/apimachinery/pkg/util/managedfields"
-	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // PriorityLevelConfigurationApplyConfiguration represents an declarative configuration of the PriorityLevelConfiguration type for use
@@ -271,4 +274,19 @@ func (b *PriorityLevelConfigurationApplyConfiguration) WithSpec(value *PriorityL
 func (b *PriorityLevelConfigurationApplyConfiguration) WithStatus(value *PriorityLevelConfigurationStatusApplyConfiguration) *PriorityLevelConfigurationApplyConfiguration {
 	b.Status = value
 	return b
+}
+func (b *PriorityLevelConfigurationApplyConfiguration) Original() client.Object {
+	return &flowcontrolv1alpha1.PriorityLevelConfiguration{}
+}
+
+func (b *PriorityLevelConfigurationApplyConfiguration) Extract(obj client.Object, fieldManager string, subresource string) (*PriorityLevelConfigurationApplyConfiguration, error) {
+	return extractPriorityLevelConfiguration(obj.(*flowcontrolv1alpha1.PriorityLevelConfiguration), fieldManager, subresource)
+}
+func (b *PriorityLevelConfigurationApplyConfiguration) ObjectKey() (client.ObjectKey, error) {
+	if b.Name == nil {
+		return client.ObjectKey{}, errors.New("The PriorityLevelConfigurationApplyConfiguration name should not be empty.")
+	}
+	return client.ObjectKey{
+		Name: *b.Name,
+	}, nil
 }

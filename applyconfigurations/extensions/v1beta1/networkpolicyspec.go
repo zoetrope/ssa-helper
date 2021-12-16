@@ -19,8 +19,8 @@ limitations under the License.
 package v1beta1
 
 import (
-	extensionsv1beta1 "k8s.io/api/extensions/v1beta1"
 	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	extensionsv1beta1 "k8s.io/api/extensions/v1beta1"
 )
 
 // NetworkPolicySpecApplyConfiguration represents an declarative configuration of the NetworkPolicySpec type for use

@@ -19,12 +19,15 @@ limitations under the License.
 package v1
 
 import (
+	"errors"
+
+	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	apicorev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	managedfields "k8s.io/apimachinery/pkg/util/managedfields"
-	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // NamespaceApplyConfiguration represents an declarative configuration of the Namespace type for use
@@ -271,4 +274,19 @@ func (b *NamespaceApplyConfiguration) WithSpec(value *NamespaceSpecApplyConfigur
 func (b *NamespaceApplyConfiguration) WithStatus(value *NamespaceStatusApplyConfiguration) *NamespaceApplyConfiguration {
 	b.Status = value
 	return b
+}
+func (b *NamespaceApplyConfiguration) Original() client.Object {
+	return &apicorev1.Namespace{}
+}
+
+func (b *NamespaceApplyConfiguration) Extract(obj client.Object, fieldManager string, subresource string) (*NamespaceApplyConfiguration, error) {
+	return extractNamespace(obj.(*apicorev1.Namespace), fieldManager, subresource)
+}
+func (b *NamespaceApplyConfiguration) ObjectKey() (client.ObjectKey, error) {
+	if b.Name == nil {
+		return client.ObjectKey{}, errors.New("The NamespaceApplyConfiguration name should not be empty.")
+	}
+	return client.ObjectKey{
+		Name: *b.Name,
+	}, nil
 }

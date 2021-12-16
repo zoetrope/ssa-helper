@@ -19,13 +19,16 @@ limitations under the License.
 package v1beta1
 
 import (
+	"errors"
+
+	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	v1beta1 "k8s.io/api/storage/v1beta1"
 	resource "k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	managedfields "k8s.io/apimachinery/pkg/util/managedfields"
-	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // CSIStorageCapacityApplyConfiguration represents an declarative configuration of the CSIStorageCapacity type for use
@@ -292,4 +295,23 @@ func (b *CSIStorageCapacityApplyConfiguration) WithCapacity(value resource.Quant
 func (b *CSIStorageCapacityApplyConfiguration) WithMaximumVolumeSize(value resource.Quantity) *CSIStorageCapacityApplyConfiguration {
 	b.MaximumVolumeSize = &value
 	return b
+}
+func (b *CSIStorageCapacityApplyConfiguration) Original() client.Object {
+	return &v1beta1.CSIStorageCapacity{}
+}
+
+func (b *CSIStorageCapacityApplyConfiguration) Extract(obj client.Object, fieldManager string, subresource string) (*CSIStorageCapacityApplyConfiguration, error) {
+	return extractCSIStorageCapacity(obj.(*v1beta1.CSIStorageCapacity), fieldManager, subresource)
+}
+func (b *CSIStorageCapacityApplyConfiguration) ObjectKey() (client.ObjectKey, error) {
+	if b.Namespace == nil {
+		return client.ObjectKey{}, errors.New("The CSIStorageCapacityApplyConfiguration namespace should not be empty.")
+	}
+	if b.Name == nil {
+		return client.ObjectKey{}, errors.New("The CSIStorageCapacityApplyConfiguration name should not be empty.")
+	}
+	return client.ObjectKey{
+		Name:      *b.Name,
+		Namespace: *b.Namespace,
+	}, nil
 }

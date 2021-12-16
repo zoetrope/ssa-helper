@@ -19,12 +19,15 @@ limitations under the License.
 package v2beta2
 
 import (
+	"errors"
+
+	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	autoscalingv2beta2 "k8s.io/api/autoscaling/v2beta2"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	managedfields "k8s.io/apimachinery/pkg/util/managedfields"
-	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // HorizontalPodAutoscalerApplyConfiguration represents an declarative configuration of the HorizontalPodAutoscaler type for use
@@ -273,4 +276,23 @@ func (b *HorizontalPodAutoscalerApplyConfiguration) WithSpec(value *HorizontalPo
 func (b *HorizontalPodAutoscalerApplyConfiguration) WithStatus(value *HorizontalPodAutoscalerStatusApplyConfiguration) *HorizontalPodAutoscalerApplyConfiguration {
 	b.Status = value
 	return b
+}
+func (b *HorizontalPodAutoscalerApplyConfiguration) Original() client.Object {
+	return &autoscalingv2beta2.HorizontalPodAutoscaler{}
+}
+
+func (b *HorizontalPodAutoscalerApplyConfiguration) Extract(obj client.Object, fieldManager string, subresource string) (*HorizontalPodAutoscalerApplyConfiguration, error) {
+	return extractHorizontalPodAutoscaler(obj.(*autoscalingv2beta2.HorizontalPodAutoscaler), fieldManager, subresource)
+}
+func (b *HorizontalPodAutoscalerApplyConfiguration) ObjectKey() (client.ObjectKey, error) {
+	if b.Namespace == nil {
+		return client.ObjectKey{}, errors.New("The HorizontalPodAutoscalerApplyConfiguration namespace should not be empty.")
+	}
+	if b.Name == nil {
+		return client.ObjectKey{}, errors.New("The HorizontalPodAutoscalerApplyConfiguration name should not be empty.")
+	}
+	return client.ObjectKey{
+		Name:      *b.Name,
+		Namespace: *b.Namespace,
+	}, nil
 }

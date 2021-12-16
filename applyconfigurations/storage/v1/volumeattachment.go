@@ -19,12 +19,15 @@ limitations under the License.
 package v1
 
 import (
+	"errors"
+
+	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	apistoragev1 "k8s.io/api/storage/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	managedfields "k8s.io/apimachinery/pkg/util/managedfields"
-	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // VolumeAttachmentApplyConfiguration represents an declarative configuration of the VolumeAttachment type for use
@@ -271,4 +274,19 @@ func (b *VolumeAttachmentApplyConfiguration) WithSpec(value *VolumeAttachmentSpe
 func (b *VolumeAttachmentApplyConfiguration) WithStatus(value *VolumeAttachmentStatusApplyConfiguration) *VolumeAttachmentApplyConfiguration {
 	b.Status = value
 	return b
+}
+func (b *VolumeAttachmentApplyConfiguration) Original() client.Object {
+	return &apistoragev1.VolumeAttachment{}
+}
+
+func (b *VolumeAttachmentApplyConfiguration) Extract(obj client.Object, fieldManager string, subresource string) (*VolumeAttachmentApplyConfiguration, error) {
+	return extractVolumeAttachment(obj.(*apistoragev1.VolumeAttachment), fieldManager, subresource)
+}
+func (b *VolumeAttachmentApplyConfiguration) ObjectKey() (client.ObjectKey, error) {
+	if b.Name == nil {
+		return client.ObjectKey{}, errors.New("The VolumeAttachmentApplyConfiguration name should not be empty.")
+	}
+	return client.ObjectKey{
+		Name: *b.Name,
+	}, nil
 }

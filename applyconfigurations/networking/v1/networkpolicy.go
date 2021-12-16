@@ -19,12 +19,15 @@ limitations under the License.
 package v1
 
 import (
+	"errors"
+
+	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	apinetworkingv1 "k8s.io/api/networking/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	managedfields "k8s.io/apimachinery/pkg/util/managedfields"
-	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // NetworkPolicyApplyConfiguration represents an declarative configuration of the NetworkPolicy type for use
@@ -264,4 +267,23 @@ func (b *NetworkPolicyApplyConfiguration) ensureObjectMetaApplyConfigurationExis
 func (b *NetworkPolicyApplyConfiguration) WithSpec(value *NetworkPolicySpecApplyConfiguration) *NetworkPolicyApplyConfiguration {
 	b.Spec = value
 	return b
+}
+func (b *NetworkPolicyApplyConfiguration) Original() client.Object {
+	return &apinetworkingv1.NetworkPolicy{}
+}
+
+func (b *NetworkPolicyApplyConfiguration) Extract(obj client.Object, fieldManager string, subresource string) (*NetworkPolicyApplyConfiguration, error) {
+	return extractNetworkPolicy(obj.(*apinetworkingv1.NetworkPolicy), fieldManager, subresource)
+}
+func (b *NetworkPolicyApplyConfiguration) ObjectKey() (client.ObjectKey, error) {
+	if b.Namespace == nil {
+		return client.ObjectKey{}, errors.New("The NetworkPolicyApplyConfiguration namespace should not be empty.")
+	}
+	if b.Name == nil {
+		return client.ObjectKey{}, errors.New("The NetworkPolicyApplyConfiguration name should not be empty.")
+	}
+	return client.ObjectKey{
+		Name:      *b.Name,
+		Namespace: *b.Namespace,
+	}, nil
 }

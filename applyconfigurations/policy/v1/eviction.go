@@ -19,12 +19,15 @@ limitations under the License.
 package v1
 
 import (
+	"errors"
+
+	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	policyv1 "k8s.io/api/policy/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	managedfields "k8s.io/apimachinery/pkg/util/managedfields"
-	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // EvictionApplyConfiguration represents an declarative configuration of the Eviction type for use
@@ -264,4 +267,23 @@ func (b *EvictionApplyConfiguration) ensureObjectMetaApplyConfigurationExists() 
 func (b *EvictionApplyConfiguration) WithDeleteOptions(value *v1.DeleteOptionsApplyConfiguration) *EvictionApplyConfiguration {
 	b.DeleteOptions = value
 	return b
+}
+func (b *EvictionApplyConfiguration) Original() client.Object {
+	return &policyv1.Eviction{}
+}
+
+func (b *EvictionApplyConfiguration) Extract(obj client.Object, fieldManager string, subresource string) (*EvictionApplyConfiguration, error) {
+	return extractEviction(obj.(*policyv1.Eviction), fieldManager, subresource)
+}
+func (b *EvictionApplyConfiguration) ObjectKey() (client.ObjectKey, error) {
+	if b.Namespace == nil {
+		return client.ObjectKey{}, errors.New("The EvictionApplyConfiguration namespace should not be empty.")
+	}
+	if b.Name == nil {
+		return client.ObjectKey{}, errors.New("The EvictionApplyConfiguration name should not be empty.")
+	}
+	return client.ObjectKey{
+		Name:      *b.Name,
+		Namespace: *b.Namespace,
+	}, nil
 }

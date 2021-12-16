@@ -19,13 +19,16 @@ limitations under the License.
 package v1
 
 import (
+	"errors"
+
+	corev1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/core/v1"
+	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	apieventsv1 "k8s.io/api/events/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	managedfields "k8s.io/apimachinery/pkg/util/managedfields"
-	corev1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/core/v1"
-	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // EventApplyConfiguration represents an declarative configuration of the Event type for use
@@ -382,4 +385,23 @@ func (b *EventApplyConfiguration) WithDeprecatedLastTimestamp(value metav1.Time)
 func (b *EventApplyConfiguration) WithDeprecatedCount(value int32) *EventApplyConfiguration {
 	b.DeprecatedCount = &value
 	return b
+}
+func (b *EventApplyConfiguration) Original() client.Object {
+	return &apieventsv1.Event{}
+}
+
+func (b *EventApplyConfiguration) Extract(obj client.Object, fieldManager string, subresource string) (*EventApplyConfiguration, error) {
+	return extractEvent(obj.(*apieventsv1.Event), fieldManager, subresource)
+}
+func (b *EventApplyConfiguration) ObjectKey() (client.ObjectKey, error) {
+	if b.Namespace == nil {
+		return client.ObjectKey{}, errors.New("The EventApplyConfiguration namespace should not be empty.")
+	}
+	if b.Name == nil {
+		return client.ObjectKey{}, errors.New("The EventApplyConfiguration name should not be empty.")
+	}
+	return client.ObjectKey{
+		Name:      *b.Name,
+		Namespace: *b.Namespace,
+	}, nil
 }

@@ -19,12 +19,15 @@ limitations under the License.
 package v1beta1
 
 import (
+	"errors"
+
+	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	appsv1beta1 "k8s.io/api/apps/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	managedfields "k8s.io/apimachinery/pkg/util/managedfields"
-	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // StatefulSetApplyConfiguration represents an declarative configuration of the StatefulSet type for use
@@ -273,4 +276,23 @@ func (b *StatefulSetApplyConfiguration) WithSpec(value *StatefulSetSpecApplyConf
 func (b *StatefulSetApplyConfiguration) WithStatus(value *StatefulSetStatusApplyConfiguration) *StatefulSetApplyConfiguration {
 	b.Status = value
 	return b
+}
+func (b *StatefulSetApplyConfiguration) Original() client.Object {
+	return &appsv1beta1.StatefulSet{}
+}
+
+func (b *StatefulSetApplyConfiguration) Extract(obj client.Object, fieldManager string, subresource string) (*StatefulSetApplyConfiguration, error) {
+	return extractStatefulSet(obj.(*appsv1beta1.StatefulSet), fieldManager, subresource)
+}
+func (b *StatefulSetApplyConfiguration) ObjectKey() (client.ObjectKey, error) {
+	if b.Namespace == nil {
+		return client.ObjectKey{}, errors.New("The StatefulSetApplyConfiguration namespace should not be empty.")
+	}
+	if b.Name == nil {
+		return client.ObjectKey{}, errors.New("The StatefulSetApplyConfiguration name should not be empty.")
+	}
+	return client.ObjectKey{
+		Name:      *b.Name,
+		Namespace: *b.Namespace,
+	}, nil
 }

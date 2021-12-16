@@ -19,12 +19,15 @@ limitations under the License.
 package v1beta2
 
 import (
+	"errors"
+
+	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	appsv1beta2 "k8s.io/api/apps/v1beta2"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	managedfields "k8s.io/apimachinery/pkg/util/managedfields"
-	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // DeploymentApplyConfiguration represents an declarative configuration of the Deployment type for use
@@ -273,4 +276,23 @@ func (b *DeploymentApplyConfiguration) WithSpec(value *DeploymentSpecApplyConfig
 func (b *DeploymentApplyConfiguration) WithStatus(value *DeploymentStatusApplyConfiguration) *DeploymentApplyConfiguration {
 	b.Status = value
 	return b
+}
+func (b *DeploymentApplyConfiguration) Original() client.Object {
+	return &appsv1beta2.Deployment{}
+}
+
+func (b *DeploymentApplyConfiguration) Extract(obj client.Object, fieldManager string, subresource string) (*DeploymentApplyConfiguration, error) {
+	return extractDeployment(obj.(*appsv1beta2.Deployment), fieldManager, subresource)
+}
+func (b *DeploymentApplyConfiguration) ObjectKey() (client.ObjectKey, error) {
+	if b.Namespace == nil {
+		return client.ObjectKey{}, errors.New("The DeploymentApplyConfiguration namespace should not be empty.")
+	}
+	if b.Name == nil {
+		return client.ObjectKey{}, errors.New("The DeploymentApplyConfiguration name should not be empty.")
+	}
+	return client.ObjectKey{
+		Name:      *b.Name,
+		Namespace: *b.Namespace,
+	}, nil
 }

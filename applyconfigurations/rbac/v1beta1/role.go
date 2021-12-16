@@ -19,12 +19,15 @@ limitations under the License.
 package v1beta1
 
 import (
+	"errors"
+
+	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	rbacv1beta1 "k8s.io/api/rbac/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	managedfields "k8s.io/apimachinery/pkg/util/managedfields"
-	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // RoleApplyConfiguration represents an declarative configuration of the Role type for use
@@ -269,4 +272,23 @@ func (b *RoleApplyConfiguration) WithRules(values ...*PolicyRuleApplyConfigurati
 		b.Rules = append(b.Rules, *values[i])
 	}
 	return b
+}
+func (b *RoleApplyConfiguration) Original() client.Object {
+	return &rbacv1beta1.Role{}
+}
+
+func (b *RoleApplyConfiguration) Extract(obj client.Object, fieldManager string, subresource string) (*RoleApplyConfiguration, error) {
+	return extractRole(obj.(*rbacv1beta1.Role), fieldManager, subresource)
+}
+func (b *RoleApplyConfiguration) ObjectKey() (client.ObjectKey, error) {
+	if b.Namespace == nil {
+		return client.ObjectKey{}, errors.New("The RoleApplyConfiguration namespace should not be empty.")
+	}
+	if b.Name == nil {
+		return client.ObjectKey{}, errors.New("The RoleApplyConfiguration name should not be empty.")
+	}
+	return client.ObjectKey{
+		Name:      *b.Name,
+		Namespace: *b.Namespace,
+	}, nil
 }

@@ -19,13 +19,16 @@ limitations under the License.
 package v1
 
 import (
+	"errors"
+
+	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	appsv1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	types "k8s.io/apimachinery/pkg/types"
 	managedfields "k8s.io/apimachinery/pkg/util/managedfields"
-	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // ControllerRevisionApplyConfiguration represents an declarative configuration of the ControllerRevision type for use
@@ -274,4 +277,23 @@ func (b *ControllerRevisionApplyConfiguration) WithData(value runtime.RawExtensi
 func (b *ControllerRevisionApplyConfiguration) WithRevision(value int64) *ControllerRevisionApplyConfiguration {
 	b.Revision = &value
 	return b
+}
+func (b *ControllerRevisionApplyConfiguration) Original() client.Object {
+	return &appsv1.ControllerRevision{}
+}
+
+func (b *ControllerRevisionApplyConfiguration) Extract(obj client.Object, fieldManager string, subresource string) (*ControllerRevisionApplyConfiguration, error) {
+	return extractControllerRevision(obj.(*appsv1.ControllerRevision), fieldManager, subresource)
+}
+func (b *ControllerRevisionApplyConfiguration) ObjectKey() (client.ObjectKey, error) {
+	if b.Namespace == nil {
+		return client.ObjectKey{}, errors.New("The ControllerRevisionApplyConfiguration namespace should not be empty.")
+	}
+	if b.Name == nil {
+		return client.ObjectKey{}, errors.New("The ControllerRevisionApplyConfiguration name should not be empty.")
+	}
+	return client.ObjectKey{
+		Name:      *b.Name,
+		Namespace: *b.Namespace,
+	}, nil
 }

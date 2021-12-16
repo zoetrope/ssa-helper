@@ -19,12 +19,15 @@ limitations under the License.
 package v1
 
 import (
+	"errors"
+
+	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	apipolicyv1 "k8s.io/api/policy/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	managedfields "k8s.io/apimachinery/pkg/util/managedfields"
-	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // PodDisruptionBudgetApplyConfiguration represents an declarative configuration of the PodDisruptionBudget type for use
@@ -273,4 +276,23 @@ func (b *PodDisruptionBudgetApplyConfiguration) WithSpec(value *PodDisruptionBud
 func (b *PodDisruptionBudgetApplyConfiguration) WithStatus(value *PodDisruptionBudgetStatusApplyConfiguration) *PodDisruptionBudgetApplyConfiguration {
 	b.Status = value
 	return b
+}
+func (b *PodDisruptionBudgetApplyConfiguration) Original() client.Object {
+	return &apipolicyv1.PodDisruptionBudget{}
+}
+
+func (b *PodDisruptionBudgetApplyConfiguration) Extract(obj client.Object, fieldManager string, subresource string) (*PodDisruptionBudgetApplyConfiguration, error) {
+	return extractPodDisruptionBudget(obj.(*apipolicyv1.PodDisruptionBudget), fieldManager, subresource)
+}
+func (b *PodDisruptionBudgetApplyConfiguration) ObjectKey() (client.ObjectKey, error) {
+	if b.Namespace == nil {
+		return client.ObjectKey{}, errors.New("The PodDisruptionBudgetApplyConfiguration namespace should not be empty.")
+	}
+	if b.Name == nil {
+		return client.ObjectKey{}, errors.New("The PodDisruptionBudgetApplyConfiguration name should not be empty.")
+	}
+	return client.ObjectKey{
+		Name:      *b.Name,
+		Namespace: *b.Namespace,
+	}, nil
 }
