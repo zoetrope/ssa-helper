@@ -19,7 +19,7 @@ limitations under the License.
 package v1beta1
 
 import (
-	metav1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	metav1 "github.com/zoetrope/ssa-helper/applyconfigurations/meta/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 

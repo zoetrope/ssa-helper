@@ -1,4 +1,4 @@
-module github.com/zoetrope/ac-deepcopy
+module github.com/zoetrope/ssa-helper
 
 go 1.18
 

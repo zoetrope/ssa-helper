@@ -13,9 +13,9 @@ generate-deepcopy:
 	rm -rf ./tmp/output
 	mkdir -p ./tmp/output
 	./gen-deepcopy.sh
-	cp -r ./tmp/output/github.com/zoetrope/ac-deepcopy/tmp/client-go/applyconfigurations/ applyconfigurations
+	cp -r ./tmp/output/github.com/zoetrope/ssa-helper/tmp/client-go/applyconfigurations/ applyconfigurations
 	cp -r ./tmp/client-go/applyconfigurations/* applyconfigurations
-	find ./applyconfigurations/ -type f | xargs sed -i "s#k8s.io/client-go/applyconfigurations#github.com/zoetrope/ac-deepcopy/applyconfigurations#g"
+	find ./applyconfigurations/ -type f | xargs sed -i "s#k8s.io/client-go/applyconfigurations#github.com/zoetrope/ssa-helper/applyconfigurations#g"
 
 generate-extractor:
 	./gen-extractor.sh

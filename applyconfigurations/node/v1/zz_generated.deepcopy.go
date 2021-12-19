@@ -6,8 +6,8 @@
 package v1
 
 import (
-	applyconfigurationscorev1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/core/v1"
-	metav1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	applyconfigurationscorev1 "github.com/zoetrope/ssa-helper/applyconfigurations/core/v1"
+	metav1 "github.com/zoetrope/ssa-helper/applyconfigurations/meta/v1"
 	corev1 "k8s.io/api/core/v1"
 	resource "k8s.io/apimachinery/pkg/api/resource"
 )

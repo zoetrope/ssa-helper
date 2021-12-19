@@ -19,7 +19,7 @@ limitations under the License.
 package v1
 
 import (
-	corev1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/core/v1"
+	corev1 "github.com/zoetrope/ssa-helper/applyconfigurations/core/v1"
 )
 
 // EndpointApplyConfiguration represents an declarative configuration of the Endpoint type for use
