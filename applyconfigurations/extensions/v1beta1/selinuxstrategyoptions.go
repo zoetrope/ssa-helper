@@ -19,8 +19,8 @@ limitations under the License.
 package v1beta1
 
 import (
-	v1beta1 "k8s.io/api/extensions/v1beta1"
 	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/core/v1"
+	v1beta1 "k8s.io/api/extensions/v1beta1"
 )
 
 // SELinuxStrategyOptionsApplyConfiguration represents an declarative configuration of the SELinuxStrategyOptions type for use

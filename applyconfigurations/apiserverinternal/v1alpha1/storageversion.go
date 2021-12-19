@@ -19,12 +19,15 @@ limitations under the License.
 package v1alpha1
 
 import (
+	"errors"
+
+	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	v1alpha1 "k8s.io/api/apiserverinternal/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	managedfields "k8s.io/apimachinery/pkg/util/managedfields"
-	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // StorageVersionApplyConfiguration represents an declarative configuration of the StorageVersion type for use
@@ -271,4 +274,19 @@ func (b *StorageVersionApplyConfiguration) WithSpec(value v1alpha1.StorageVersio
 func (b *StorageVersionApplyConfiguration) WithStatus(value *StorageVersionStatusApplyConfiguration) *StorageVersionApplyConfiguration {
 	b.Status = value
 	return b
+}
+func (b *StorageVersionApplyConfiguration) Original() client.Object {
+	return &v1alpha1.StorageVersion{}
+}
+
+func (b *StorageVersionApplyConfiguration) Extract(obj client.Object, fieldManager string, subresource string) (*StorageVersionApplyConfiguration, error) {
+	return extractStorageVersion(obj.(*v1alpha1.StorageVersion), fieldManager, subresource)
+}
+func (b *StorageVersionApplyConfiguration) ObjectKey() (client.ObjectKey, error) {
+	if b.Name == nil {
+		return client.ObjectKey{}, errors.New("The StorageVersionApplyConfiguration name should not be empty.")
+	}
+	return client.ObjectKey{
+		Name: *b.Name,
+	}, nil
 }

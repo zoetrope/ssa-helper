@@ -19,12 +19,15 @@ limitations under the License.
 package v1beta1
 
 import (
+	"errors"
+
+	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	admissionregistrationv1beta1 "k8s.io/api/admissionregistration/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	managedfields "k8s.io/apimachinery/pkg/util/managedfields"
-	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // ValidatingWebhookConfigurationApplyConfiguration represents an declarative configuration of the ValidatingWebhookConfiguration type for use
@@ -267,4 +270,19 @@ func (b *ValidatingWebhookConfigurationApplyConfiguration) WithWebhooks(values .
 		b.Webhooks = append(b.Webhooks, *values[i])
 	}
 	return b
+}
+func (b *ValidatingWebhookConfigurationApplyConfiguration) Original() client.Object {
+	return &admissionregistrationv1beta1.ValidatingWebhookConfiguration{}
+}
+
+func (b *ValidatingWebhookConfigurationApplyConfiguration) Extract(obj client.Object, fieldManager string, subresource string) (*ValidatingWebhookConfigurationApplyConfiguration, error) {
+	return extractValidatingWebhookConfiguration(obj.(*admissionregistrationv1beta1.ValidatingWebhookConfiguration), fieldManager, subresource)
+}
+func (b *ValidatingWebhookConfigurationApplyConfiguration) ObjectKey() (client.ObjectKey, error) {
+	if b.Name == nil {
+		return client.ObjectKey{}, errors.New("The ValidatingWebhookConfigurationApplyConfiguration name should not be empty.")
+	}
+	return client.ObjectKey{
+		Name: *b.Name,
+	}, nil
 }

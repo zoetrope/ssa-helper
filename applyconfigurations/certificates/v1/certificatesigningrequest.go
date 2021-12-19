@@ -19,12 +19,15 @@ limitations under the License.
 package v1
 
 import (
+	"errors"
+
+	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	apicertificatesv1 "k8s.io/api/certificates/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	managedfields "k8s.io/apimachinery/pkg/util/managedfields"
-	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // CertificateSigningRequestApplyConfiguration represents an declarative configuration of the CertificateSigningRequest type for use
@@ -271,4 +274,19 @@ func (b *CertificateSigningRequestApplyConfiguration) WithSpec(value *Certificat
 func (b *CertificateSigningRequestApplyConfiguration) WithStatus(value *CertificateSigningRequestStatusApplyConfiguration) *CertificateSigningRequestApplyConfiguration {
 	b.Status = value
 	return b
+}
+func (b *CertificateSigningRequestApplyConfiguration) Original() client.Object {
+	return &apicertificatesv1.CertificateSigningRequest{}
+}
+
+func (b *CertificateSigningRequestApplyConfiguration) Extract(obj client.Object, fieldManager string, subresource string) (*CertificateSigningRequestApplyConfiguration, error) {
+	return extractCertificateSigningRequest(obj.(*apicertificatesv1.CertificateSigningRequest), fieldManager, subresource)
+}
+func (b *CertificateSigningRequestApplyConfiguration) ObjectKey() (client.ObjectKey, error) {
+	if b.Name == nil {
+		return client.ObjectKey{}, errors.New("The CertificateSigningRequestApplyConfiguration name should not be empty.")
+	}
+	return client.ObjectKey{
+		Name: *b.Name,
+	}, nil
 }

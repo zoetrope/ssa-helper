@@ -19,12 +19,15 @@ limitations under the License.
 package v1alpha1
 
 import (
+	"errors"
+
+	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	rbacv1alpha1 "k8s.io/api/rbac/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	managedfields "k8s.io/apimachinery/pkg/util/managedfields"
-	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // RoleBindingApplyConfiguration represents an declarative configuration of the RoleBinding type for use
@@ -278,4 +281,23 @@ func (b *RoleBindingApplyConfiguration) WithSubjects(values ...*SubjectApplyConf
 func (b *RoleBindingApplyConfiguration) WithRoleRef(value *RoleRefApplyConfiguration) *RoleBindingApplyConfiguration {
 	b.RoleRef = value
 	return b
+}
+func (b *RoleBindingApplyConfiguration) Original() client.Object {
+	return &rbacv1alpha1.RoleBinding{}
+}
+
+func (b *RoleBindingApplyConfiguration) Extract(obj client.Object, fieldManager string, subresource string) (*RoleBindingApplyConfiguration, error) {
+	return extractRoleBinding(obj.(*rbacv1alpha1.RoleBinding), fieldManager, subresource)
+}
+func (b *RoleBindingApplyConfiguration) ObjectKey() (client.ObjectKey, error) {
+	if b.Namespace == nil {
+		return client.ObjectKey{}, errors.New("The RoleBindingApplyConfiguration namespace should not be empty.")
+	}
+	if b.Name == nil {
+		return client.ObjectKey{}, errors.New("The RoleBindingApplyConfiguration name should not be empty.")
+	}
+	return client.ObjectKey{
+		Name:      *b.Name,
+		Namespace: *b.Namespace,
+	}, nil
 }

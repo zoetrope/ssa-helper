@@ -19,12 +19,15 @@ limitations under the License.
 package v1
 
 import (
+	"errors"
+
+	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	managedfields "k8s.io/apimachinery/pkg/util/managedfields"
-	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // SecretApplyConfiguration represents an declarative configuration of the Secret type for use
@@ -303,4 +306,23 @@ func (b *SecretApplyConfiguration) WithStringData(entries map[string]string) *Se
 func (b *SecretApplyConfiguration) WithType(value corev1.SecretType) *SecretApplyConfiguration {
 	b.Type = &value
 	return b
+}
+func (b *SecretApplyConfiguration) Original() client.Object {
+	return &corev1.Secret{}
+}
+
+func (b *SecretApplyConfiguration) Extract(obj client.Object, fieldManager string, subresource string) (*SecretApplyConfiguration, error) {
+	return extractSecret(obj.(*corev1.Secret), fieldManager, subresource)
+}
+func (b *SecretApplyConfiguration) ObjectKey() (client.ObjectKey, error) {
+	if b.Namespace == nil {
+		return client.ObjectKey{}, errors.New("The SecretApplyConfiguration namespace should not be empty.")
+	}
+	if b.Name == nil {
+		return client.ObjectKey{}, errors.New("The SecretApplyConfiguration name should not be empty.")
+	}
+	return client.ObjectKey{
+		Name:      *b.Name,
+		Namespace: *b.Namespace,
+	}, nil
 }

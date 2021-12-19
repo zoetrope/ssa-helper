@@ -19,12 +19,15 @@ limitations under the License.
 package v1
 
 import (
+	"errors"
+
+	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	apibatchv1 "k8s.io/api/batch/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	managedfields "k8s.io/apimachinery/pkg/util/managedfields"
-	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // JobApplyConfiguration represents an declarative configuration of the Job type for use
@@ -273,4 +276,23 @@ func (b *JobApplyConfiguration) WithSpec(value *JobSpecApplyConfiguration) *JobA
 func (b *JobApplyConfiguration) WithStatus(value *JobStatusApplyConfiguration) *JobApplyConfiguration {
 	b.Status = value
 	return b
+}
+func (b *JobApplyConfiguration) Original() client.Object {
+	return &apibatchv1.Job{}
+}
+
+func (b *JobApplyConfiguration) Extract(obj client.Object, fieldManager string, subresource string) (*JobApplyConfiguration, error) {
+	return extractJob(obj.(*apibatchv1.Job), fieldManager, subresource)
+}
+func (b *JobApplyConfiguration) ObjectKey() (client.ObjectKey, error) {
+	if b.Namespace == nil {
+		return client.ObjectKey{}, errors.New("The JobApplyConfiguration namespace should not be empty.")
+	}
+	if b.Name == nil {
+		return client.ObjectKey{}, errors.New("The JobApplyConfiguration name should not be empty.")
+	}
+	return client.ObjectKey{
+		Name:      *b.Name,
+		Namespace: *b.Namespace,
+	}, nil
 }

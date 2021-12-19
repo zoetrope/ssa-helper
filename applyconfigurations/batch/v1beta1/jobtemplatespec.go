@@ -19,10 +19,10 @@ limitations under the License.
 package v1beta1
 
 import (
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	types "k8s.io/apimachinery/pkg/types"
 	batchv1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/batch/v1"
 	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	types "k8s.io/apimachinery/pkg/types"
 )
 
 // JobTemplateSpecApplyConfiguration represents an declarative configuration of the JobTemplateSpec type for use

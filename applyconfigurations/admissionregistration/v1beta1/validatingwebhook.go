@@ -19,8 +19,8 @@ limitations under the License.
 package v1beta1
 
 import (
-	admissionregistrationv1beta1 "k8s.io/api/admissionregistration/v1beta1"
 	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	admissionregistrationv1beta1 "k8s.io/api/admissionregistration/v1beta1"
 )
 
 // ValidatingWebhookApplyConfiguration represents an declarative configuration of the ValidatingWebhook type for use

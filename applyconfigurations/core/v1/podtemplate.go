@@ -19,12 +19,15 @@ limitations under the License.
 package v1
 
 import (
+	"errors"
+
+	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	apicorev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	managedfields "k8s.io/apimachinery/pkg/util/managedfields"
-	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // PodTemplateApplyConfiguration represents an declarative configuration of the PodTemplate type for use
@@ -264,4 +267,23 @@ func (b *PodTemplateApplyConfiguration) ensureObjectMetaApplyConfigurationExists
 func (b *PodTemplateApplyConfiguration) WithTemplate(value *PodTemplateSpecApplyConfiguration) *PodTemplateApplyConfiguration {
 	b.Template = value
 	return b
+}
+func (b *PodTemplateApplyConfiguration) Original() client.Object {
+	return &apicorev1.PodTemplate{}
+}
+
+func (b *PodTemplateApplyConfiguration) Extract(obj client.Object, fieldManager string, subresource string) (*PodTemplateApplyConfiguration, error) {
+	return extractPodTemplate(obj.(*apicorev1.PodTemplate), fieldManager, subresource)
+}
+func (b *PodTemplateApplyConfiguration) ObjectKey() (client.ObjectKey, error) {
+	if b.Namespace == nil {
+		return client.ObjectKey{}, errors.New("The PodTemplateApplyConfiguration namespace should not be empty.")
+	}
+	if b.Name == nil {
+		return client.ObjectKey{}, errors.New("The PodTemplateApplyConfiguration name should not be empty.")
+	}
+	return client.ObjectKey{
+		Name:      *b.Name,
+		Namespace: *b.Namespace,
+	}, nil
 }

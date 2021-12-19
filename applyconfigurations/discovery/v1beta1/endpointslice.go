@@ -19,12 +19,15 @@ limitations under the License.
 package v1beta1
 
 import (
+	"errors"
+
+	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	v1beta1 "k8s.io/api/discovery/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	managedfields "k8s.io/apimachinery/pkg/util/managedfields"
-	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // EndpointSliceApplyConfiguration represents an declarative configuration of the EndpointSlice type for use
@@ -292,4 +295,23 @@ func (b *EndpointSliceApplyConfiguration) WithPorts(values ...*EndpointPortApply
 		b.Ports = append(b.Ports, *values[i])
 	}
 	return b
+}
+func (b *EndpointSliceApplyConfiguration) Original() client.Object {
+	return &v1beta1.EndpointSlice{}
+}
+
+func (b *EndpointSliceApplyConfiguration) Extract(obj client.Object, fieldManager string, subresource string) (*EndpointSliceApplyConfiguration, error) {
+	return extractEndpointSlice(obj.(*v1beta1.EndpointSlice), fieldManager, subresource)
+}
+func (b *EndpointSliceApplyConfiguration) ObjectKey() (client.ObjectKey, error) {
+	if b.Namespace == nil {
+		return client.ObjectKey{}, errors.New("The EndpointSliceApplyConfiguration namespace should not be empty.")
+	}
+	if b.Name == nil {
+		return client.ObjectKey{}, errors.New("The EndpointSliceApplyConfiguration name should not be empty.")
+	}
+	return client.ObjectKey{
+		Name:      *b.Name,
+		Namespace: *b.Namespace,
+	}, nil
 }

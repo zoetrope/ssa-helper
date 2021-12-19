@@ -19,12 +19,15 @@ limitations under the License.
 package v1
 
 import (
+	"errors"
+
+	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	apicorev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	managedfields "k8s.io/apimachinery/pkg/util/managedfields"
-	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // ServiceAccountApplyConfiguration represents an declarative configuration of the ServiceAccount type for use
@@ -292,4 +295,23 @@ func (b *ServiceAccountApplyConfiguration) WithImagePullSecrets(values ...*Local
 func (b *ServiceAccountApplyConfiguration) WithAutomountServiceAccountToken(value bool) *ServiceAccountApplyConfiguration {
 	b.AutomountServiceAccountToken = &value
 	return b
+}
+func (b *ServiceAccountApplyConfiguration) Original() client.Object {
+	return &apicorev1.ServiceAccount{}
+}
+
+func (b *ServiceAccountApplyConfiguration) Extract(obj client.Object, fieldManager string, subresource string) (*ServiceAccountApplyConfiguration, error) {
+	return extractServiceAccount(obj.(*apicorev1.ServiceAccount), fieldManager, subresource)
+}
+func (b *ServiceAccountApplyConfiguration) ObjectKey() (client.ObjectKey, error) {
+	if b.Namespace == nil {
+		return client.ObjectKey{}, errors.New("The ServiceAccountApplyConfiguration namespace should not be empty.")
+	}
+	if b.Name == nil {
+		return client.ObjectKey{}, errors.New("The ServiceAccountApplyConfiguration name should not be empty.")
+	}
+	return client.ObjectKey{
+		Name:      *b.Name,
+		Namespace: *b.Namespace,
+	}, nil
 }

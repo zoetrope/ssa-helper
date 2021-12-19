@@ -19,8 +19,8 @@ limitations under the License.
 package v2beta1
 
 import (
-	resource "k8s.io/apimachinery/pkg/api/resource"
 	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	resource "k8s.io/apimachinery/pkg/api/resource"
 )
 
 // PodsMetricStatusApplyConfiguration represents an declarative configuration of the PodsMetricStatus type for use

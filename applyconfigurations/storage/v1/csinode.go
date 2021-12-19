@@ -19,12 +19,15 @@ limitations under the License.
 package v1
 
 import (
+	"errors"
+
+	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	apistoragev1 "k8s.io/api/storage/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	managedfields "k8s.io/apimachinery/pkg/util/managedfields"
-	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // CSINodeApplyConfiguration represents an declarative configuration of the CSINode type for use
@@ -262,4 +265,19 @@ func (b *CSINodeApplyConfiguration) ensureObjectMetaApplyConfigurationExists() {
 func (b *CSINodeApplyConfiguration) WithSpec(value *CSINodeSpecApplyConfiguration) *CSINodeApplyConfiguration {
 	b.Spec = value
 	return b
+}
+func (b *CSINodeApplyConfiguration) Original() client.Object {
+	return &apistoragev1.CSINode{}
+}
+
+func (b *CSINodeApplyConfiguration) Extract(obj client.Object, fieldManager string, subresource string) (*CSINodeApplyConfiguration, error) {
+	return extractCSINode(obj.(*apistoragev1.CSINode), fieldManager, subresource)
+}
+func (b *CSINodeApplyConfiguration) ObjectKey() (client.ObjectKey, error) {
+	if b.Name == nil {
+		return client.ObjectKey{}, errors.New("The CSINodeApplyConfiguration name should not be empty.")
+	}
+	return client.ObjectKey{
+		Name: *b.Name,
+	}, nil
 }

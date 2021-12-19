@@ -19,12 +19,15 @@ limitations under the License.
 package v1
 
 import (
+	"errors"
+
+	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	apicorev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	managedfields "k8s.io/apimachinery/pkg/util/managedfields"
-	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // PersistentVolumeApplyConfiguration represents an declarative configuration of the PersistentVolume type for use
@@ -271,4 +274,19 @@ func (b *PersistentVolumeApplyConfiguration) WithSpec(value *PersistentVolumeSpe
 func (b *PersistentVolumeApplyConfiguration) WithStatus(value *PersistentVolumeStatusApplyConfiguration) *PersistentVolumeApplyConfiguration {
 	b.Status = value
 	return b
+}
+func (b *PersistentVolumeApplyConfiguration) Original() client.Object {
+	return &apicorev1.PersistentVolume{}
+}
+
+func (b *PersistentVolumeApplyConfiguration) Extract(obj client.Object, fieldManager string, subresource string) (*PersistentVolumeApplyConfiguration, error) {
+	return extractPersistentVolume(obj.(*apicorev1.PersistentVolume), fieldManager, subresource)
+}
+func (b *PersistentVolumeApplyConfiguration) ObjectKey() (client.ObjectKey, error) {
+	if b.Name == nil {
+		return client.ObjectKey{}, errors.New("The PersistentVolumeApplyConfiguration name should not be empty.")
+	}
+	return client.ObjectKey{
+		Name: *b.Name,
+	}, nil
 }

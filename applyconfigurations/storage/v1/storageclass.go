@@ -19,14 +19,17 @@ limitations under the License.
 package v1
 
 import (
+	"errors"
+
+	applyconfigurationscorev1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/core/v1"
+	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	corev1 "k8s.io/api/core/v1"
 	storagev1 "k8s.io/api/storage/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	managedfields "k8s.io/apimachinery/pkg/util/managedfields"
-	applyconfigurationscorev1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/core/v1"
-	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // StorageClassApplyConfiguration represents an declarative configuration of the StorageClass type for use
@@ -331,4 +334,19 @@ func (b *StorageClassApplyConfiguration) WithAllowedTopologies(values ...*applyc
 		b.AllowedTopologies = append(b.AllowedTopologies, *values[i])
 	}
 	return b
+}
+func (b *StorageClassApplyConfiguration) Original() client.Object {
+	return &storagev1.StorageClass{}
+}
+
+func (b *StorageClassApplyConfiguration) Extract(obj client.Object, fieldManager string, subresource string) (*StorageClassApplyConfiguration, error) {
+	return extractStorageClass(obj.(*storagev1.StorageClass), fieldManager, subresource)
+}
+func (b *StorageClassApplyConfiguration) ObjectKey() (client.ObjectKey, error) {
+	if b.Name == nil {
+		return client.ObjectKey{}, errors.New("The StorageClassApplyConfiguration name should not be empty.")
+	}
+	return client.ObjectKey{
+		Name: *b.Name,
+	}, nil
 }

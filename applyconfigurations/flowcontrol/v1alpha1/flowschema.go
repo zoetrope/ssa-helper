@@ -19,12 +19,15 @@ limitations under the License.
 package v1alpha1
 
 import (
+	"errors"
+
+	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	flowcontrolv1alpha1 "k8s.io/api/flowcontrol/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	managedfields "k8s.io/apimachinery/pkg/util/managedfields"
-	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // FlowSchemaApplyConfiguration represents an declarative configuration of the FlowSchema type for use
@@ -271,4 +274,19 @@ func (b *FlowSchemaApplyConfiguration) WithSpec(value *FlowSchemaSpecApplyConfig
 func (b *FlowSchemaApplyConfiguration) WithStatus(value *FlowSchemaStatusApplyConfiguration) *FlowSchemaApplyConfiguration {
 	b.Status = value
 	return b
+}
+func (b *FlowSchemaApplyConfiguration) Original() client.Object {
+	return &flowcontrolv1alpha1.FlowSchema{}
+}
+
+func (b *FlowSchemaApplyConfiguration) Extract(obj client.Object, fieldManager string, subresource string) (*FlowSchemaApplyConfiguration, error) {
+	return extractFlowSchema(obj.(*flowcontrolv1alpha1.FlowSchema), fieldManager, subresource)
+}
+func (b *FlowSchemaApplyConfiguration) ObjectKey() (client.ObjectKey, error) {
+	if b.Name == nil {
+		return client.ObjectKey{}, errors.New("The FlowSchemaApplyConfiguration name should not be empty.")
+	}
+	return client.ObjectKey{
+		Name: *b.Name,
+	}, nil
 }

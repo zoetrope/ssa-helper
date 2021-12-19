@@ -19,12 +19,15 @@ limitations under the License.
 package v1
 
 import (
+	"errors"
+
+	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	managedfields "k8s.io/apimachinery/pkg/util/managedfields"
-	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // ConfigMapApplyConfiguration represents an declarative configuration of the ConfigMap type for use
@@ -294,4 +297,23 @@ func (b *ConfigMapApplyConfiguration) WithBinaryData(entries map[string][]byte) 
 		b.BinaryData[k] = v
 	}
 	return b
+}
+func (b *ConfigMapApplyConfiguration) Original() client.Object {
+	return &corev1.ConfigMap{}
+}
+
+func (b *ConfigMapApplyConfiguration) Extract(obj client.Object, fieldManager string, subresource string) (*ConfigMapApplyConfiguration, error) {
+	return extractConfigMap(obj.(*corev1.ConfigMap), fieldManager, subresource)
+}
+func (b *ConfigMapApplyConfiguration) ObjectKey() (client.ObjectKey, error) {
+	if b.Namespace == nil {
+		return client.ObjectKey{}, errors.New("The ConfigMapApplyConfiguration namespace should not be empty.")
+	}
+	if b.Name == nil {
+		return client.ObjectKey{}, errors.New("The ConfigMapApplyConfiguration name should not be empty.")
+	}
+	return client.ObjectKey{
+		Name:      *b.Name,
+		Namespace: *b.Namespace,
+	}, nil
 }

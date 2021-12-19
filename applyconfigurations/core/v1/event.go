@@ -19,12 +19,15 @@ limitations under the License.
 package v1
 
 import (
+	"errors"
+
+	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
+	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
 	apicorev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	managedfields "k8s.io/apimachinery/pkg/util/managedfields"
-	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // EventApplyConfiguration represents an declarative configuration of the Event type for use
@@ -381,4 +384,23 @@ func (b *EventApplyConfiguration) WithReportingController(value string) *EventAp
 func (b *EventApplyConfiguration) WithReportingInstance(value string) *EventApplyConfiguration {
 	b.ReportingInstance = &value
 	return b
+}
+func (b *EventApplyConfiguration) Original() client.Object {
+	return &apicorev1.Event{}
+}
+
+func (b *EventApplyConfiguration) Extract(obj client.Object, fieldManager string, subresource string) (*EventApplyConfiguration, error) {
+	return extractEvent(obj.(*apicorev1.Event), fieldManager, subresource)
+}
+func (b *EventApplyConfiguration) ObjectKey() (client.ObjectKey, error) {
+	if b.Namespace == nil {
+		return client.ObjectKey{}, errors.New("The EventApplyConfiguration namespace should not be empty.")
+	}
+	if b.Name == nil {
+		return client.ObjectKey{}, errors.New("The EventApplyConfiguration name should not be empty.")
+	}
+	return client.ObjectKey{
+		Name:      *b.Name,
+		Namespace: *b.Namespace,
+	}, nil
 }
