@@ -29,7 +29,7 @@ example:
 
     import (
          ...
-         v1ac "github.com/zoetrope/ac-deepcopy/applyconfigurations/autoscaling/v1"
+         v1ac "github.com/zoetrope/ssa-helper/applyconfigurations/autoscaling/v1"
     )
     hpaApplyConfig := v1ac.HorizontalPodAutoscaler(autoscalerName, ns).
          WithSpec(v1ac.HorizontalPodAutoscalerSpec().

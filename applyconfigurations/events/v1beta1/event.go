@@ -21,9 +21,9 @@ package v1beta1
 import (
 	"errors"
 
-	corev1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/core/v1"
-	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	corev1 "github.com/zoetrope/ssa-helper/applyconfigurations/core/v1"
+	internal "github.com/zoetrope/ssa-helper/applyconfigurations/internal"
+	v1 "github.com/zoetrope/ssa-helper/applyconfigurations/meta/v1"
 	eventsv1beta1 "k8s.io/api/events/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"

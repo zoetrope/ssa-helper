@@ -21,8 +21,8 @@ package v1alpha1
 import (
 	"errors"
 
-	internal "github.com/zoetrope/ac-deepcopy/applyconfigurations/internal"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	internal "github.com/zoetrope/ssa-helper/applyconfigurations/internal"
+	v1 "github.com/zoetrope/ssa-helper/applyconfigurations/meta/v1"
 	v1alpha1 "k8s.io/api/storage/v1alpha1"
 	resource "k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

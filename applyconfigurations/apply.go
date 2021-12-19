@@ -3,7 +3,7 @@ package applyconfigurations
 import (
 	"context"
 
-	metav1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	metav1 "github.com/zoetrope/ssa-helper/applyconfigurations/meta/v1"
 	"k8s.io/apimachinery/pkg/api/equality"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"

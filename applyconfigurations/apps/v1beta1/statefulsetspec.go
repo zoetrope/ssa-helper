@@ -19,8 +19,8 @@ limitations under the License.
 package v1beta1
 
 import (
-	corev1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/core/v1"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	corev1 "github.com/zoetrope/ssa-helper/applyconfigurations/core/v1"
+	v1 "github.com/zoetrope/ssa-helper/applyconfigurations/meta/v1"
 	v1beta1 "k8s.io/api/apps/v1beta1"
 )
 

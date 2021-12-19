@@ -6,7 +6,7 @@
 package v1beta2
 
 import (
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	v1 "github.com/zoetrope/ssa-helper/applyconfigurations/meta/v1"
 	flowcontrolv1beta2 "k8s.io/api/flowcontrol/v1beta2"
 )
 

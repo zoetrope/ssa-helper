@@ -6,7 +6,7 @@
 package v2
 
 import (
-	metav1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	metav1 "github.com/zoetrope/ssa-helper/applyconfigurations/meta/v1"
 	autoscalingv2 "k8s.io/api/autoscaling/v2"
 	v1 "k8s.io/api/core/v1"
 )

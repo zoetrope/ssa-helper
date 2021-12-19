@@ -19,7 +19,7 @@ limitations under the License.
 package v1
 
 import (
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	v1 "github.com/zoetrope/ssa-helper/applyconfigurations/meta/v1"
 )
 
 // PodAffinityTermApplyConfiguration represents an declarative configuration of the PodAffinityTerm type for use

@@ -6,8 +6,8 @@
 package v1
 
 import (
-	corev1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/core/v1"
-	metav1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	corev1 "github.com/zoetrope/ssa-helper/applyconfigurations/core/v1"
+	metav1 "github.com/zoetrope/ssa-helper/applyconfigurations/meta/v1"
 	apicorev1 "k8s.io/api/core/v1"
 	discoveryv1 "k8s.io/api/discovery/v1"
 )

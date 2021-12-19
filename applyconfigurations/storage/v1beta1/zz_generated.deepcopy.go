@@ -6,8 +6,8 @@
 package v1beta1
 
 import (
-	applyconfigurationscorev1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/core/v1"
-	v1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
+	applyconfigurationscorev1 "github.com/zoetrope/ssa-helper/applyconfigurations/core/v1"
+	v1 "github.com/zoetrope/ssa-helper/applyconfigurations/meta/v1"
 	corev1 "k8s.io/api/core/v1"
 	storagev1beta1 "k8s.io/api/storage/v1beta1"
 )

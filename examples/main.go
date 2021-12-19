@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/zoetrope/ac-deepcopy/applyconfigurations"
-	appsv1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/apps/v1"
-	corev1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/core/v1"
-	metav1 "github.com/zoetrope/ac-deepcopy/applyconfigurations/meta/v1"
-	v1 "k8s.io/api/apps/v1"
+	"github.com/zoetrope/ssa-helper/applyconfigurations"
+	appsv1 "github.com/zoetrope/ssa-helper/applyconfigurations/apps/v1"
+	corev1 "github.com/zoetrope/ssa-helper/applyconfigurations/core/v1"
+	metav1 "github.com/zoetrope/ssa-helper/applyconfigurations/meta/v1"
+	apiappsv1 "k8s.io/api/apps/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/kubernetes/scheme"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -53,7 +53,7 @@ func main() {
 	}
 
 	// OwnerReference
-	owner := &v1.Deployment{}
+	owner := &apiappsv1.Deployment{}
 	key, err := dep1.ObjectKey()
 	if err != nil {
 		fmt.Println(err)
